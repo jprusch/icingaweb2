@@ -4,11 +4,13 @@
 namespace Icinga\Controllers;
 
 use Exception;
+use GuzzleHttp\Psr7\ServerRequest;
 use Icinga\Application\Logger;
 use Icinga\Authentication\User\DomainAwareInterface;
 use Icinga\Data\DataArray\ArrayDatasource;
 use Icinga\Data\Filter\Filter;
 use Icinga\Data\Reducible;
+use Icinga\Data\UserSuggestions;
 use Icinga\Exception\NotFoundError;
 use Icinga\Forms\Config\UserGroup\AddMemberForm;
 use Icinga\Forms\Config\UserGroup\UserGroupForm;
@@ -17,10 +19,11 @@ use Icinga\Web\Controller\AuthBackendController;
 use Icinga\Web\Form;
 use Icinga\Web\Notification;
 use Icinga\Web\Url;
-use Icinga\Web\Widget;
+use ipl\Web\Url as IplUrl;
 
 class GroupController extends AuthBackendController
 {
+    protected $urlParams;
     public function init()
     {
         $this->view->title = $this->translate('User Groups');
@@ -225,23 +228,42 @@ class GroupController extends AuthBackendController
         $this->assertPermission('config/access-control/groups');
         $groupName = $this->params->getRequired('group');
         $backend = $this->getUserGroupBackend($this->params->getRequired('backend'), 'Icinga\Data\Extensible');
-
-        $form = new AddMemberForm();
-        $form->setDataSource($this->fetchUsers())
+        $form = (new AddMemberForm())
             ->setBackend($backend)
             ->setGroupName($groupName)
             ->setRedirectUrl(
                 Url::fromPath('group/show', array('backend' => $backend->getName(), 'group' => $groupName))
             )
-            ->setUidDisabled();
+            ->setSuggestionUrl(IplUrl::fromPath(
+                'group/complete',
+                [
+                    '_disableLayout' => true,
+                    'showCompact' => true,
+                    'backend' => $this->params->getRequired('backend'),
+                    'group' => $groupName
+                ]
+            ));
 
-        try {
-            $form->handleRequest();
-        } catch (NotFoundError $_) {
-            $this->httpNotFound(sprintf($this->translate('Group "%s" not found'), $groupName));
-        }
+        $form->on(AddMemberForm::ON_SUCCESS, function ($form) {
+            $this->getResponse()->redirectAndExit($form->getRedirectUrl());
+        });
+        $form->handleRequest(ServerRequest::fromGlobals());
 
-        $this->renderForm($form, $this->translate('New User Group Member'));
+        $this->addTitleTab($this->translate('New User Group Member'));
+        $this->addContent($form);
+    }
+
+    public function completeAction()
+    {
+        $backend = $this->getUserGroupBackend($this->params->getRequired('backend'), 'Icinga\Data\Extensible');
+        $groupName = $this->params->getRequired('group');
+
+        $suggestions = new UserSuggestions();
+        $suggestions->setUserGroupName($groupName);
+        $suggestions->setUserGroupBackend($backend);
+        $suggestions->setBackends($this->loadUserBackends('Icinga\Data\Selectable'));
+        $suggestions->forRequest(ServerRequest::fromGlobals());
+        $this->getDocument()->add($suggestions);
     }
 
     /**

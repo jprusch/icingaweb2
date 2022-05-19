@@ -21,6 +21,8 @@
 
         this.on('keydown', '#menu .config-menu .config-nav-item', this.onKeyDown, this);
 
+        this.on('click', '#toggle-more', this.toggleMoreFlyout, this);
+
         /**
          * The DOM-Path of the active item
          *
@@ -409,6 +411,10 @@
         if (e.key == 'Enter' && $(document.activeElement).is('.flyout a')) {
             _this.hideConfigFlyout(e);
         }
+    }
+
+    Navigation.prototype.toggleMoreFlyout = function(e) {
+        $('#layout').toggleClass('more-button-open');
     }
 
     /**

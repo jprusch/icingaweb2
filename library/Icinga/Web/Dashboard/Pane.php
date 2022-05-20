@@ -117,8 +117,7 @@ class Pane extends BaseDashboard implements Sortable
 
             $this->addEntry($newDashlet);
 
-            if (
-                Modules\DashletManager::isOrphaned($newDashlet)
+            if (Modules\DashletManager::isOrphaned($newDashlet)
                 || (
                     $newDashlet->isModuleDashlet()
                     && $dashlet->system_module_dashlet_id === null

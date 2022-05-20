@@ -89,7 +89,7 @@ class Pane extends BaseDashboard implements Sortable
         return $this;
     }
 
-    public function loadDashboardEntries(string $name = '')
+    public function loadDashboardEntries(string $name = null)
     {
         $dashlets = Model\Dashlet::on(DBUtils::getConn())
             ->utilize(self::TABLE)
@@ -148,7 +148,7 @@ class Pane extends BaseDashboard implements Sortable
         return $this;
     }
 
-    public function manageEntry($entry, BaseDashboard $origin = null, bool $manageRecursive = false)
+    public function manageEntry($entryOrEntries, BaseDashboard $origin = null, bool $manageRecursive = false)
     {
         if ($origin && ! $origin instanceof Pane) {
             throw new \InvalidArgumentException(sprintf(
@@ -168,7 +168,7 @@ class Pane extends BaseDashboard implements Sortable
         $user = Dashboard::getUser()->getUsername();
         $conn = DBUtils::getConn();
 
-        $dashlets = is_array($entry) ? $entry : [$entry];
+        $dashlets = is_array($entryOrEntries) ? $entryOrEntries : [$entryOrEntries];
         // Highest priority is 0, so count($entries) are always lowest prio + 1
         $order = count($this->getEntries());
         foreach ($dashlets as $dashlet) {

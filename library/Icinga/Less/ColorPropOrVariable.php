@@ -14,8 +14,18 @@ class ColorPropOrVariable extends Less_Tree
 {
     public $type = 'Variable';
 
+    /** @var array All less tree variable rules pushed to the latest frame stack */
+    public static $frameVariables = [];
+
     /** @var Less_Tree_Variable */
     protected $variable;
+
+    /**
+     * A flag to determine whether this is a less tree variable
+     *
+     * @var bool
+     */
+    protected $isVariable = true;
 
     /**
      * @return Less_Tree_Variable
@@ -37,6 +47,30 @@ class ColorPropOrVariable extends Less_Tree
         return $this;
     }
 
+    /**
+     * Set whether this is a less tree variable
+     *
+     * @param bool $isVariable
+     *
+     * @return $this
+     */
+    public function setIsVariable(bool $isVariable): self
+    {
+        $this->isVariable = $isVariable;
+
+        return $this;
+    }
+
+    /**
+     * Get whether this a less tree variable
+     *
+     * @return bool
+     */
+    public function isVariable(): bool
+    {
+        return $this->isVariable;
+    }
+
     public function compile($env)
     {
         $v = $this->getVariable();
@@ -56,9 +90,41 @@ class ColorPropOrVariable extends Less_Tree
         }
 
         if ($compiled instanceof Less_Tree_Color) {
+            if ($this->isVariable() && isset($compiled->name) && $compiled->name !== $v->name) {
+                // Retrieve all variables of the last pushed frame
+                self::$frameVariables = $env->frames[sizeof($env->frames) - 1]->_variables;
+
+                foreach (Visitor::$visitorVarReferences as $source => $reference) {
+                    if (! isset(self::$frameVariables[$source])) {
+                        continue;
+                    }
+
+                    $variable = &self::$frameVariables[$source];
+                    // We are only interested in less tree rule objects
+                    if ($variable instanceof ColorProp || ! $variable->value instanceof Less_Tree_Color) {
+                        continue;
+                    }
+
+                    // Update the name of the value to the already registered visitor reference
+                    $variable->value->name = $reference;
+
+                    $variable = ColorProp::fromColor(clone $variable->value);
+                    $variable->setName($source);
+
+                    if (! isset(Visitor::$visitorVarReferences[$reference])) {
+                        $refObj = &self::$frameVariables[$reference];
+                        if ($refObj instanceof ColorProp || ! $refObj->value instanceof Less_Tree_Color) {
+                            continue;
+                        }
+
+                        $refObj = ColorProp::fromColor(clone $refObj->value);
+                    }
+                }
+            }
+
             return ColorProp::fromColor($compiled)
                 ->setIndex($v->index)
-                ->setName(substr($v->name, 1));
+                ->setName($v->name);
         }
 
         return $compiled;

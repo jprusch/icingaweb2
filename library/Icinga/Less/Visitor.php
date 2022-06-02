@@ -31,6 +31,13 @@ CSS;
     public $isPreEvalVisitor = true;
 
     /**
+     * All less tree var visitor references of other variables
+     *
+     * @var array
+     */
+    public static $visitorVarReferences = [];
+
+    /**
      * Whether calling var() CSS function
      *
      * If that's the case, don't try to replace compiled Less colors with CSS var() function calls.
@@ -60,6 +67,9 @@ CSS;
     /** @var null|string CSS module selector if any */
     protected $moduleSelector;
 
+    /** @var bool Whether another visitor method is being called when visiting a variable method */
+    protected $callingOtherFunction = false;
+
     public function visitCall($c)
     {
         if ($c->name === 'var') {
@@ -68,6 +78,8 @@ CSS;
             }
 
             $this->callingVar = spl_object_hash($c);
+        } else {
+            $this->callingOtherFunction = true;
         }
 
         return $c;
@@ -77,6 +89,8 @@ CSS;
     {
         if ($this->callingVar !== false && $this->callingVar === spl_object_hash($c)) {
             $this->callingVar = false;
+        } else {
+            $this->callingOtherFunction = false;
         }
     }
 
@@ -136,6 +150,17 @@ CSS;
 
             $this->definingVariable = spl_object_hash($r);
             $this->variableOrigin = $r;
+
+            /**
+             * Register less tree var visitor references if any, those will be needed when generating the
+             * compiled CSS results in {@see ColorProp} class.
+             */
+            if ($r->variable && $r->value instanceof \Less_Tree_Value) {
+                $rv = $r->value->value[0];
+                if ($rv instanceof \Less_Tree_Expression && $rv->value[0] instanceof \Less_Tree_Variable) {
+                    self::$visitorVarReferences[$r->name] = $rv->value[0]->name;
+                }
+            }
         }
 
         return $r;
@@ -183,7 +208,17 @@ CSS;
         }
 
         return (new ColorPropOrVariable())
-            ->setVariable($v);
+            ->setVariable($v)
+            ->setIsVariable($this->callingOtherFunction === false);
+    }
+
+    public function visitColor($c)
+    {
+        if ($this->definingVariable !== false) {
+            $c->name = $this->variableOrigin->name;
+        }
+
+        return $c;
     }
 
     public function run($node)

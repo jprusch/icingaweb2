@@ -119,15 +119,14 @@ class ColorProp extends Less_Tree_Color
                 $colorPropName = '@' . $colorPropName;
             }
 
-            $frameVariables = ColorPropOrVariable::$frameVariables;
-            if (isset($frameVariables['@' . $this->getName()])) {
-                $frameVar = ColorPropOrVariable::$frameVariables['@' . $this->getName()];
+            if (ColorPropOrVariable::isRefResolved($this->getName())) {
+                $frameVar = ColorPropOrVariable::getResolvedRefFor($this->getName());
                 if (isset($frameVar->color->name) && $colorPropName !== $frameVar->color->name) {
                     $colorPropName = $frameVar->color->name;
                 }
             }
 
-            if (substr($colorPropName, 1) !== $this->getName() && isset($frameVariables[$colorPropName])) {
+            if (substr($colorPropName, 1) !== $this->getName() && ColorPropOrVariable::isRefResolved($colorPropName)) {
                 $key = new Less_Tree_Keyword('var(--' . $this->getName());
                 $key->genCSS($output);
                 $output->add(', ');
@@ -135,10 +134,8 @@ class ColorProp extends Less_Tree_Color
                 $this->generated = true;
                 $this->closingBraces = ')';
 
-                $fv = $frameVariables[$colorPropName];
-                if ($fv instanceof ColorProp) {
-                    $fv->genCSS($output);
-                }
+                $fv = ColorPropOrVariable::getResolvedRefFor($colorPropName);
+                $fv->genCSS($output);
             }
         }
 

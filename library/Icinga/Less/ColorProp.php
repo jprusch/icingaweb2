@@ -114,10 +114,7 @@ class ColorProp extends Less_Tree_Color
     public function genCSS($output)
     {
         if ($this->color instanceof ColorProp || isset($this->color->name)) {
-            $colorPropName = $this->color->name;
-            if ($colorPropName[0] !== '@') {
-                $colorPropName = '@' . $colorPropName;
-            }
+            $colorPropName = ColorPropOrVariable::getValidName($this->color->name);
 
             if (ColorPropOrVariable::isRefResolved($this->getName())) {
                 $frameVar = ColorPropOrVariable::getResolvedRefFor($this->getName());

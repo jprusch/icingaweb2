@@ -283,7 +283,7 @@ ALTER TABLE "icingaweb_system_dashlet" ALTER COLUMN "module_dashlet_id" SET STOR
 ALTER TABLE ONLY "icingaweb_system_dashlet"
   ADD CONSTRAINT pk_icingaweb_system_dashlet
   PRIMARY KEY (
-    "dashlet_id",
+    "dashlet_id"
 );
 
 ALTER TABLE ONLY "icingaweb_system_dashlet"

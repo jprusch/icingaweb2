@@ -272,7 +272,10 @@ class DashboardsController extends CompatController
         $originals = $dashboards['originals'];
         unset($dashboards['originals']);
 
-        $this->dashboard->load();
+        $activateHome = $this->params->get('home');
+        $activatePane = $this->params->get('pane');
+
+        $this->dashboard->load($activateHome, $activatePane, true);
 
         $orgHome = null;
         $orgPane = null;

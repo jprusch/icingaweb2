@@ -88,7 +88,8 @@ CREATE TABLE "icingaweb_dashlet" (
   "label"         character varying(254) NOT NULL,
   "url"           character varying(2048) NOT NULL,
   "priority"      tinyuint NOT NULL,
-  "disabled"      boolenum DEFAULT 'n'
+  "disabled"      boolenum DEFAULT 'n',
+  "description"   text DEFAULT NULL
 );
 
 ALTER TABLE "icingaweb_dashlet" ALTER COLUMN "id" SET STORAGE PLAIN;

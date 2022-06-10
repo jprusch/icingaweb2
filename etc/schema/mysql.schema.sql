@@ -98,6 +98,7 @@ CREATE TABLE `icingaweb_dashlet` (
     `url`           varchar(2048) NOT NULL COLLATE utf8mb4_bin,
     `priority`      tinyint NOT NULL,
     `disabled`      enum ('n', 'y') DEFAULT 'n',
+    `description`   text DEFAULT NULL COLLATE utf8mb4_unicode_ci,
     PRIMARY KEY (`id`),
     KEY `fk_dashlet_dashboard` (`dashboard_id`),
     CONSTRAINT `fk_dashlet_dashboard` FOREIGN KEY (`dashboard_id`)

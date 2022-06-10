@@ -31,7 +31,8 @@ class Dashlet extends Model
             'label',
             'url',
             'priority',
-            'disabled'
+            'disabled',
+            'description'
         ];
     }
 
@@ -42,7 +43,8 @@ class Dashlet extends Model
             'name'         => t('Dashlet Name'),
             'label'        => t('Dashlet Title'),
             'url'          => t('Dashlet Url'),
-            'priority'     => t('Dashlet Order Priority')
+            'priority'     => t('Dashlet Order Priority'),
+            'description'  => t('Dashlet Description')
         ];
     }
 

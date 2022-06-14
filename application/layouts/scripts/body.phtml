@@ -1,7 +1,7 @@
 <?php
 
 use Icinga\Web\Navigation\Mobile\MobileConfigMenu;
-use Icinga\Web\Navigation\Mobile\MobileNavigation;
+use Icinga\Web\Navigation\Mobile\MobileMenu;
 use Icinga\Web\Url;
 use Icinga\Web\Notification;
 use Icinga\Authentication\Auth;
@@ -53,7 +53,10 @@ if ($this->layout()->inlineLayout) {
                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
             <button class="search-reset icon-cancel" type="reset"></button>
         </form>
-        <?= new MobileConfigMenu() ?>
+        <div id="mobile-config-menu" data-last-update="-1" data-base-target="_main" class="container"
+             data-icinga-url="<?= $this->href('layout/mobile-config-menu') ?>"  data-icinga-refresh="15">
+            <?= new MobileConfigMenu() ?>
+        </div>
         <?= $this->render('parts/navigation.phtml'); ?>
     </div>
 <?php endif ?>
@@ -101,4 +104,7 @@ if ($this->layout()->inlineLayout) {
   ?></ul>
   <div id="application-state-summary" class="container" data-icinga-url="<?= $this->url('application-state/summary') ?>" data-last-update="-1" data-icinga-refresh="60"></div>
 </div>
-<?= new MobileNavigation() ?>
+<div id="mobile-menu" data-last-update="-1" data-base-target="_main" class="container"
+     data-icinga-url="<?= $this->href('layout/mobile-menu') ?>"  data-icinga-refresh="15">
+    <?= new MobileMenu() ?>
+</div>

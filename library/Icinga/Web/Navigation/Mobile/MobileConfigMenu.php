@@ -166,7 +166,7 @@ class MobileConfigMenu extends BaseHtmlElement
     {
         $username = Auth::getInstance()->getUser()->getUsername();
         $navContent = HtmlElement::create('div', ['class' => 'flyout-content']);
-        $navContent->add(HtmlElement::create('ul', ['class' => 'nav'], [
+        $navContent->add(HtmlElement::create('ul', ['class' => 'nav flyout-menu'], [
             HtmlElement::create('li', ['class' => 'has-icon'], [
                 HtmlElement::create(
                     'a',
@@ -191,7 +191,7 @@ class MobileConfigMenu extends BaseHtmlElement
                 ));
             }
 
-            $ul = HtmlElement::create('ul', ['class' => 'nav']);
+            $ul = HtmlElement::create('ul', ['class' => 'nav flyout-menu']);
             foreach ($c['items'] as $key => $item) {
                 $ul->add($this->createLevel2MenuItem($item, $key));
             }

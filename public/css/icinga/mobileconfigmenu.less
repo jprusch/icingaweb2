@@ -82,45 +82,12 @@
     left: 1em;
     top: 4em;
 
-    li {
-      &.badge-nav-item > a {
-        display: flex;
-        align-items: baseline;
-        width: 100%;
-
-        .state-badge {
-          margin-left: auto;
-        }
-      }
-    }
-
-    li:not(.has-icon) a {
-      padding-left: 2em;
-    }
-
-    li .icon {
-      width: 1em;
-      margin-left: .3em;
-      margin-right: .2em;
-    }
-
-    li .user-ball {
-      .ball-size-m();
-      line-height: .25;
-      margin-right: .2em;
-    }
-
     &:before {
       transform: rotate(225deg);
       height: 1.1em;
       width: 1.1em;
       top: -.6em;
       right: .6em;
-    }
-
-    .nav-item-logout {
-      color: @color-critical;
-      border-top: 1px solid @gray-lighter;
     }
   }
 

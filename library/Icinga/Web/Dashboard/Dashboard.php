@@ -173,9 +173,7 @@ class Dashboard extends BaseHtmlElement implements DashboardEntry
                 . ' You will always be able to edit them afterwards.'
             );
             $this->addHtml(HtmlElement::create('p', null, $message));
-        } elseif (! $activeHome->hasEntries()) {
-            $this->addHtml(HtmlElement::create('h1', null, t('No dashboard added to this dashboard home.')));
-        } else {
+        } elseif ($activeHome->hasEntries()) {
             $activePane = $activeHome->getActivePane();
 
             if (! $activePane->hasEntries()) {
@@ -185,6 +183,8 @@ class Dashboard extends BaseHtmlElement implements DashboardEntry
                     $this->addHtml($dashlet->getHtml());
                 }
             }
+        } else {
+            $this->addHtml(HtmlElement::create('h1', null, t('No dashboard added to this dashboard home.')));
         }
     }
 }

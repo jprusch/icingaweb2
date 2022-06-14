@@ -13,9 +13,8 @@ use ipl\Html\HtmlElement;
 use ipl\Web\Widget\Link;
 
 /**
- * A dashboard pane dashlet
- *
- * This is the new element being used for the Dashlets view
+ * A Dashlet/View is basically an Url which is being visualized
+ * into a single View by Icinga Web 2
  */
 class Dashlet extends BaseDashboard
 {
@@ -91,7 +90,7 @@ class Dashlet extends BaseDashboard
     }
 
     /**
-     * Set the dashlets URL
+     * Set the URL of this dashlet
      *
      * @param string|Url $url The url to use, either as an Url object or as a path
      *
@@ -191,7 +190,7 @@ class Dashlet extends BaseDashboard
     }
 
     /**
-     * Set whether this dashlet widget is provided by a module
+     * Set whether this dashlet is provided by a module
      *
      * @param bool $moduleDashlet
      *

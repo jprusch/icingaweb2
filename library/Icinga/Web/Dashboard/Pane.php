@@ -20,7 +20,8 @@ use ipl\Stdlib\Filter;
 use function ipl\Stdlib\get_php_type;
 
 /**
- * A pane, displaying different Dashboard dashlets
+ * A Pane or Dashboard Pane organizes various Dashlets/Views into a single panel
+ * and can be accessed via the tabs rendered on the upper navigation bar of Icinga Web 2.
  */
 class Pane extends BaseDashboard implements DashboardEntry, Sortable
 {
@@ -100,6 +101,7 @@ class Pane extends BaseDashboard implements DashboardEntry, Sortable
         $dashlets = Model\Dashlet::on(DBUtils::getConn())
             ->utilize(self::TABLE)
             ->with('icingaweb_module_dashlet');
+
         $dashlets->filter(Filter::equal('dashboard_id', $this->getUuid()));
 
         // TODO(yh): Qualify those columns properly??
@@ -166,7 +168,8 @@ class Pane extends BaseDashboard implements DashboardEntry, Sortable
 
         if (! $this->getHome()) {
             throw new \LogicException(
-                'Dashlets cannot be managed. Please make sure to set the current dashboard home beforehand.'
+                'Dashlet(s) cannot be managed without a valid Dashboard Home. Please make sure to set' .
+                ' the current dashboard home beforehand.'
             );
         }
 
@@ -231,6 +234,8 @@ class Pane extends BaseDashboard implements DashboardEntry, Sortable
                         'id = ?'           => $origin->getEntry($dashlet->getName())->getUuid(),
                         'dashboard_id = ?' => $origin->getUuid()
                     ];
+
+                    $this->addEntry($dashlet);
                 }
 
                 $conn->update(Dashlet::TABLE, [
@@ -246,9 +251,9 @@ class Pane extends BaseDashboard implements DashboardEntry, Sortable
                 // Failed to move the pane! Should have already been handled by the caller,
                 // though I think it's better that we raise an exception here!!
                 throw new AlreadyExistsException(
-                    'Dashlet "%s" could not be managed. Dashboard Pane "%s" has a Dashlet with the same name!',
-                    $dashlet->getTitle(),
-                    $this->getTitle()
+                    'Failed to successfully manage the Dashlet. Dashboard Pane "%s" has already a Dashlet called "%s"!',
+                    $this->getTitle(),
+                    $dashlet->getTitle()
                 );
             }
 

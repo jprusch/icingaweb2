@@ -50,7 +50,7 @@ abstract class BaseDashboardForm extends CompatForm
      *
      * @return void
      */
-    protected function init()
+    protected function init(): void
     {
         // This is needed for the modal views
         $this->setAction((string) $this->requestUrl);
@@ -71,7 +71,7 @@ abstract class BaseDashboardForm extends CompatForm
      *
      * @return void
      */
-    public function load(BaseDashboard $dashboard)
+    public function load(BaseDashboard $dashboard): void
     {
     }
 
